@@ -1,9 +1,13 @@
-<h1>JWipe - Disk Sanitization</h1>
+<h1>Network Design</h1>
 
  ### [YouTube Demonstration](https://youtu.be/7eJexJVCqJo)
 
 <h2>Description</h2>
-Project consists of a simple PowerShell script that walks the user through "zeroing out" (wiping) any drives that are connected to the system. The utility allows you to select the target disk and choose the number of passes that are performed. The PowerShell script will configure a diskpart script file based on the user's selections and then launch Diskpart to perform the disk sanitization.
+"ECI Business" is an emerging small company with a workforce of 80 employees spread across four office buildings. The company's primary site is situated in Vancouver, with additional offices located in Calgary, Montreal, and Toronto, spanning across Canada.
+
+To support its operations effectively, the company seeks to establish a robust network infrastructure. This infrastructure should provide reliable and secure internet connectivity between the eastern and western regions, while ensuring high availability and redundancy in Vancouver.
+
+This project encompasses the design and implementation of a comprehensive network architecture, including aspects such as network design, IP addressing, VLAN configuration, and network security measures. By addressing each of these components, the project will demonstrate how the company's specific requirements are met in terms of connectivity, reliability, and data protection.
 <br />
 
 
@@ -20,7 +24,7 @@ Project consists of a simple PowerShell script that walks the user through "zero
 
 <p align="center">
 Launch the utility: <br/>
-<img src="https://i.imgur.com/62TgaWL.png" height="80%" width="80%" alt="Disk Sanitization Steps"/>
+<img src="https://i.imgur.com/llAUlDD.png" height="80%" width="80%" alt="Disk Sanitization Steps"/>
 <br />
 <br />
 Select the disk:  <br/>
