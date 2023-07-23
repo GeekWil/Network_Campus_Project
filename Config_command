@@ -1,0 +1,783 @@
+Before start, on all the routers
+
+(enable securityk9)
+enable
+conf t
+license boot level adventerp0rise
+exit
+wr (copy running-config startup-config)
+reload
+
+
+logging 192.168.3.172
+ntp server 192.168.3.1  (West)
+ntp server 192.168.4.194(East)
+
+snmp-server community G3 RO (West&East)
+*********************************
+syslog command for all routers & switches
+
+logging host 192.168.3.172 transport udp port 514
+logging on
+logging trap warning
+logging facility local7
+
+
+**********************************
+
+On S1:
+
+enable
+configure terminal
+hostname S1
+
+vlan 10
+name Vancouver
+vlan 20
+name Calgary
+vlan 30
+name AdminWest
+vlan 69
+name Native
+Vlan 99
+name Parking
+Vlan 100 
+name Guest
+Vlan 150
+name IPHONE
+exit
+
+int vlan 10
+ip add 192.168.1.2 255.255.255.0
+ip default-gateway 192.168.1.253
+
+
+int fa0/2
+switchport mode trunk
+switchport trunk allowed vlan 10,20,30,69,100,150
+switchport trunk native vlan 69
+int g0/1
+switchport mode trunk
+switchport trunk allowed vlan 10,20,30,69,100,150
+switchport trunk native vlan 69
+
+int range f0/21-24
+channel-group 1 mode active
+exit
+int port-channel 1
+switchport mode trunk
+switchport trunk allowed vlan 10,20,30,69,100,150
+
+
+int ran f0/3-4
+switchport mode access
+switchport access vlan 150
+mls qos cos 1
+switchport voice vlan 150
+
+
+spanning-tree mode rapid-pvst 
+spanning-tree vlan 10,20,30,69,100,150 root primary 
+
+
+
+************************************************************
+
+
+On S2:
+
+enable
+configure terminal
+hostname S2
+
+
+vlan 10
+name Vancouver
+vlan 20
+name Calgary
+vlan 30
+name AdminWest
+vlan 69
+name Native
+Vlan 99
+name Parking
+Vlan 100 
+name Guest
+Vlan 150
+name IPHONE
+exit
+
+int vlan 10
+ip add 192.168.1.3 255.255.255.0
+ip default-gateway 192.168.1.253
+
+(f0/1 to VM)
+int fa0/1
+switchport mode trunk
+switchport trunk allowed vlan 10,20,30,69,100,150
+switchport trunk native vlan 69
+int fa0/2
+switchport mode trunk
+switchport trunk allowed vlan 10,20,30,69,100,150
+switchport trunk native vlan 69
+int fa0/3
+switchport mode trunk
+switchport trunk allowed vlan 10,20,30,69,100,150
+switchport trunk native vlan 69
+
+spanning-tree mode rapid-pvst 
+
+
+
+************************************************************
+On S3:
+
+enable
+configure terminal
+hostname S3
+
+
+
+vlan 10
+name Vancouver
+vlan 20
+name Calgary
+vlan 30
+name AdminWest
+vlan 69
+name Native
+Vlan 99
+name Parking
+Vlan 100 
+name Guest
+Vlan 150
+name IPHONE
+exit
+
+int vlan 10
+ip add 192.168.1.4 255.255.255.0
+ip default-gateway 192.168.1.253
+
+
+int f0/3
+switchport mode trunk
+switchport trunk allowed vlan 10,20,30,69,100,150
+switchport trunk native vlan 69
+int g0/1
+switchport mode trunk
+switchport trunk allowed vlan 10,20,30,69,100,150
+switchport trunk native vlan 69
+exit
+int range f0/21-24
+channel-group 1 mode active
+exit
+int port-channel 1
+switchport mode trunk
+switchport trunk allowed vlan 10,20,30,69,100,150
+
+
+spanning-tree mode rapid-pvst 
+spanning-tree vlan 10,20,30,69,100,150 root secondary
+
+
+************************************************************
+
+On WEST:
+
+enable
+configure terminal
+hostname West
+
+
+int g0/0/1.10
+encapsulation dot1Q 10
+ip add 192.168.1.254 255.255.255.0
+int g0/0/1.20
+encapsulation dot1Q 20
+ip add 192.168.2.254 255.255.255.0
+int g0/0/1.30
+encapsulation dot1Q 30
+ip add 192.168.3.254 255.255.255.0
+int g0/0/1.69
+encapsulation dot1Q 69 native
+int g0/0/1.100
+encapsulation dot1Q 100
+ip add 192.168.0.254 255.255.255.0
+int g0/0/1.150
+encapsulation dot1Q 150
+ip add 192.168.8.254 255.255.255.0
+int g0/0/1
+no shut
+
+int g0/0/0
+ip add 209.165.100.1 255.255.255.252
+no shut
+
+
+(HSRP)
+int g0/0/1.10
+standby version 2
+standby 1 ip 192.168.1.253
+standby 1 priority 150
+standby 1 preempt
+int g0/0/1.20
+standby version 2
+standby 2 ip 192.168.2.253
+standby 2 priority 150
+standby 2 preempt
+int g0/0/1.30
+standby version 2
+standby 3 ip 192.168.3.253
+standby 3 priority 150
+standby 3 preempt
+int g0/0/1.100
+standby version 2
+standby 4 ip 192.168.0.253
+standby 4 priority 150
+standby 4 preempt
+int g0/0/1.150
+encapsulation dot1Q 150
+standby version 2
+standby 8 ip 192.168.8.253
+standby 8 priority 150
+standby 8 preempt
+
+
+
+
+
+
+
+
+(OSPF)
+int g0/0/1.10
+ip ospf 10 area 0
+ip ospf priority 255
+int g0/0/1.20
+ip ospf 10 area 0
+ip ospf priority 255
+int g0/0/1.30
+ip ospf 10 area 0
+ip ospf priority 255
+int g0/0/1.100
+ip ospf 10 area 0
+ip ospf priority 255
+int g0/0/1.150
+ip ospf 10 area 0
+ip ospf priority 255
+router ospf 10
+router-id 1.1.1.1
+default-information originate
+
+
+
+
+
+ip route 0.0.0.0 0.0.0.0 g0/0/0
+ipv6 route ::/0 g0/0/0
+
+
+
+
+
+(GRE tunnel) On West
+interface tunnel 1
+ip add 172.16.0.1 255.255.255.0
+tunnel source g0/0/0
+tunnel destination 209.165.102.1
+
+
+
+
+(IPsec)
+crypto isakmp policy 1
+encryption aes
+hash sha
+authentication pre-share
+group 24
+crypto isakmp key G3KEY address 209.165.102.1
+crypto ipsec transform-set G3SET esp-aes esp-sha-hmac
+crypto map G3MAP 10 ipsec-isakmp 
+set peer 209.165.102.1
+set transform-set G3SET
+match address 101
+access-list 101 permit ip 192.168.0.0 0.0.3.255 192.168.4.0 0.0.0.255
+int g0/0/0
+crypto map G3MAP
+
+
+
+(DHCP)
+ip dhcp excluded-address 192.168.0.128 192.168.0.254
+ip dhcp pool GUEST
+network 192.168.0.0 255.255.255.0
+default-router 192.168.0.253
+dns-server 192.168.3.1
+domain-name ad.energy.connections
+
+ip dhcp excluded-address 192.168.1.1 192.168.1.10
+ip dhcp excluded-address 192.168.1.128 192.168.1.254
+ip dhcp pool VANCOUVER
+network 192.168.1.0 255.255.255.0
+default-router 192.168.1.253
+dns-server 192.168.3.1
+domain-name ad.energy.connections
+
+ip dhcp excluded-address 192.168.2.1 192.168.2.10
+ip dhcp excluded-address 192.168.2.128 192.168.2.254
+ip dhcp pool Calgary
+network 192.168.2.0 255.255.255.0
+default-router 192.168.2.253
+dns-server 192.168.3.1
+domain-name ad.energy.connections
+
+
+ip dhcp excluded-address 192.168.3.1 192.168.3.10
+ip dhcp excluded-address 192.168.3.128 192.168.3.254
+ip dhcp pool ADMINWEST
+network 192.168.3.0 255.255.255.0
+default-router 192.168.3.253
+dns-server 192.168.3.1
+domain-name ad.energy.connections
+
+
+
+
+
+(IPv6 SLAAC)
+ipv6 unicast-routing
+
+ipv6 dhcp pool VANCOUVERv6
+dns-server 2001:db8:acad:3::1
+domain-name ad.energy.connections
+int g0/0/1.10
+ipv6 address fe80::1 link-local
+ipv6 address 2001:db8:acad:1::/64
+ipv6 dhcp server VANCOUVERv6
+
+
+ipv6 dhcp pool CALGARYv6
+dns-server 2001:db8:acad:3::1
+domain-name ad.energy.connections
+int g0/0/1.20
+ipv6 address fe80::2 link-local
+ipv6 address 2001:db8:acad:2::/64
+ipv6 dhcp server CALGARYv6
+
+ipv6 dhcp pool ADMINWESTv6
+dns-server 2001:db8:acad:3::1
+domain-name ad.energy.connections
+int g0/0/1.30
+ipv6 address fe80::3 link-local
+ipv6 address 2001:db8:acad:3::/64
+ipv6 dhcp server ADMINWESTv6
+
+ipv6 dhcp pool GUESTv6
+dns-server 2001:db8:acad:3::1
+domain-name ad.energy.connections
+int g0/0/1.100
+ipv6 address fe80::100 link-local
+ipv6 address 2001:db8:acad:100::/64
+ipv6 dhcp server GUESTv6
+
+
+
+(OSPFv3)
+int g0/0/1.10
+ipv6 ospf 10 area 0
+ipv6 ospf priority 255
+int g0/0/1.20
+ipv6 ospf 10 area 0
+ipv6 ospf priority 255
+int g0/0/1.30
+ipv6 ospf 10 area 0
+ipv6 ospf priority 255
+int g0/0/1.100
+ipv6 ospf 10 area 0
+ipv6 ospf priority 255
+int g0/0/1.150
+ipv6 ospf 10 area 0
+ipv6 ospf priority 255
+
+
+(NAT)
+access-list 5 permit 192.168.0.0 0.0.3.255
+ip nat inside source list 5 interface g0/0/0 overload
+int g0/0/0
+ip nat outside
+int g0/0/1.10
+ip nat inside
+int g0/0/1.20
+ip nat inside
+int g0/0/1.30
+ip nat inside
+int g0/0/1.100
+ip nat inside
+
+
+************************************************************
+
+On WEST2:
+
+enable
+configure terminal
+hostname West2
+
+
+int g0/0/1.10
+encapsulation dot1Q 10
+ip add 192.168.1.252 255.255.255.0
+int g0/0/1.20
+encapsulation dot1Q 20
+ip add 192.168.2.252 255.255.255.0
+int g0/0/1.30
+encapsulation dot1Q 30
+ip add 192.168.3.252 255.255.255.0
+int g0/0/1.69
+encapsulation dot1Q 69 native
+int g0/0/1.100
+encapsulation dot1Q 100
+ip add 192.168.0.252 255.255.255.0
+int g0/0/1.150
+encapsulation dotQ 150
+ip add 192.168.8.254 255.255.255.0
+int g0/0/1
+no shut
+
+int g0/0/0
+ip add 209.165.101.1 255.255.255.252
+no shut
+
+(HSRP)
+int g0/0/1.10
+standby version 2
+standby 1 ip 192.168.1.253
+int g0/0/1.20
+standby version 2
+standby 2 ip 192.168.2.253
+int g0/0/1.30
+standby version 2
+standby 3 ip 192.168.3.253
+int g0/0/1.100
+standby version 2
+standby 4 ip 192.168.0.253
+int g0/0/1.150
+standby version 2
+standby 8 ip 192.168.8.253
+
+
+
+
+
+(OSPF)
+int g0/0/1.10
+ip ospf 10 area 0
+int g0/0/1.20
+ip ospf 10 area 0
+int g0/0/1.30
+ip ospf 10 area 0
+int g0/0/1.100
+ip ospf 10 area 0
+int g0/0/1.150
+ip ospf 10 area 0
+router ospf 10 
+router-id 2.2.2.2
+
+
+ip route 0.0.0.0 0.0.0.0 g0/0/0
+ipv6 route ::/0 g0/0/0
+
+
+(GRE)
+interface tunnel 2
+ip add 172.17.0.1 255.255.255.0
+tunnel source g0/0/0
+tunnel destination 209.165.102.1
+
+(IPsec)
+crypto isakmp policy 2
+encryption aes
+hash sha
+authentication pre-share
+group 24
+crypto isakmp key G3KEY2 address 209.165.102.1
+crypto ipsec transform-set G3SET2 esp-aes esp-sha-hmac
+crypto map G3MAP2 11 ipsec-isakmp 
+set peer 209.165.102.1
+set transform-set G3SET2
+match address 102
+access-list 102 permit ip 192.168.0.0 0.0.3.255 192.168.4.0 0.0.0.255
+int g0/0/0
+crypto map G3MAP2
+
+
+
+(OSPFv3)
+int g0/0/1.10
+ipv6 ospf 10 area 0
+int g0/0/1.20
+ipv6 ospf 10 area 0
+int g0/0/1.30
+ipv6 ospf 10 area 0
+int g0/0/1.100
+ipv6 ospf 10 area 0
+int g0/0/1.150
+ipv6 ospf 10 area 0
+
+
+(NAT)
+access-list 5 permit 192.168.0.0 0.0.3.255
+ip nat inside source list 5 interface g0/0/0 overload
+int g0/0/0
+ip nat outside
+int g0/0/1.10
+ip nat inside
+int g0/0/1.20
+ip nat inside
+int g0/0/1.30
+ip nat inside
+int g0/0/1.100
+ip nat inside
+
+
+************************************************************
+
+On S4:
+
+enable
+configure terminal
+hostname S4
+
+
+vlan 40
+name Montreal
+vlan 50
+name Toronto
+vlan 60
+name AdminEast
+vlan 69
+name Native
+Vlan 99
+name Parking
+exit
+
+int vlan 40
+ip add 192.168.4.2 255.255.255.128
+ip default-gateway 192.168.4.126
+
+(All VMs connecting to f0/1)
+int f0/1
+switchport mode trunk 
+switchport trunk allowed vlan 40,50,60,69
+switchport trunk native vlan 69
+
+int g0/1
+switchport mode trunk 
+switchport trunk allowed vlan 40,50,60,69
+switchport trunk native vlan 69
+
+
+spanning-tree mode rapid-pvst 
+
+
+
+
+************************************************************
+
+On EAST:
+
+enable
+configure terminal
+hostname East
+
+
+int g0/0/1.40
+encapsulation dot1Q 40
+ip add 192.168.4.126 255.255.255.128
+int g0/0/1.50
+encapsulation dot1Q 50
+ip add 192.168.4.190 255.255.255.192
+int g0/0/1.60
+encapsulation dot1Q 60
+ip add 192.168.4.206 255.255.255.240
+int g0/0/1.69
+encapsulation dot1Q 69 native
+int g0/0/1
+no shut
+
+
+
+ip route 0.0.0.0 0.0.0.0 g0/0/0
+ipv6 route ::/0 g0/0/0
+
+
+(GRE)
+interface tunnel 2
+ip add 172.16.0.2 255.255.255.0
+tunnel source g0/0/0
+tunnel destination 209.165.100.1
+
+interface tunnel 2
+ip add 172.17.0.2 255.255.255.0
+tunnel source g0/0/0
+tunnel destination 209.165.101.1
+
+
+
+
+(IPsec to West)
+crypto isakmp policy 1
+encryption aes
+hash sha
+authentication pre-share
+group 5
+crypto isakmp key G3KEY address 209.165.100.1
+crypto ipsec transform-set G3SET esp-aes esp-sha-hmac
+crypto map G3MAP 10 ipsec-isakmp 
+set peer 209.165.100.1
+set peer 209.165.101.1 (not sure setting 2 peer is good)
+set transform-set G3SET
+match address 101
+access-list 101 permit ip 192.168.4.0 0.0.0.255 192.168.0.0 0.0.3.255
+int g0/0/0
+crypto map G3MAP
+
+
+(IPsec to West2)
+crypto isakmp policy 2
+encryption aes
+hash sha
+authentication pre-share
+group 5
+crypto isakmp key G3KEY2 address 209.165.101.1
+crypto ipsec transform-set G3SET2 esp-aes esp-sha-hmac
+crypto map G3MAP2 11 ipsec-isakmp 
+set peer 209.165.101.1
+set transform-set G3SET2
+match address 102
+access-list 102 permit ip 192.168.4.0 0.0.0.255 192.168.0.0 0.0.3.255
+int g0/0/0
+crypto map G3MAP2
+
+
+(DHCP)
+ip dhcp excluded-address 192.168.4.1 192.168.4.10
+ip dhcp excluded-address 192.168.4.126 
+ip dhcp pool Montreal
+network 192.168.4.0 255.255.255.128
+default-router 192.168.4.126
+dns-server 192.168.4.194
+domain-name ad.energy.connections
+
+ip dhcp excluded-address 192.168.4.129 192.168.4.132
+ip dhcp excluded-address 192.168.4.190 
+ip dhcp pool Toronto
+network 192.168.4.128 255.255.255.192
+default-router 192.168.4.190
+dns-server 192.168.4.194
+domain-name ad.energy.connections
+
+
+ip dhcp excluded-address 192.168.4.193 192.168.4.194
+ip dhcp excluded-address 192.168.4.206 
+ip dhcp pool ADMINEAST
+network 192.168.4.192 255.255.255.240
+default-router 192.168.4.206
+dns-server 192.168.4.194
+domain-name ad.energy.connections
+
+
+
+(IPv6 SLAAC)
+ipv6 unicast-routing
+
+ipv6 dhcp pool MONTREALv6
+dns-server 2001:db8:acad:4::194
+domain-name ad.energy.connections
+int g0/0/1.40
+ipv6 address fe80::4 link-local
+ipv6 address 2001:db8:acad:4::/64
+ipv6 dhcp server MONTREALv6
+
+ipv6 dhcp pool TORONTOv6
+dns-server 2001:db8:acad:4::194
+domain-name ad.energy.connections
+int g0/0/1.50
+ipv6 address fe80::5 link-local
+ipv6 address 2001:db8:acad:5::/64
+ipv6 dhcp server TORONTOv6
+
+ipv6 dhcp pool ADMINEASTv6
+dns-server 2001:db8:acad:4::194
+domain-name ad.energy.connections
+int g0/0/1.60
+ipv6 address fe80::6 link-local
+ipv6 address 2001:db8:acad:6::/64
+ipv6 dhcp server ADMINEASTv6
+
+
+access-list 5 permit 192.168.4.0 0.0.0.255
+ip nat inside source list 5 interface g0/0/0 overload
+int g0/0/0
+ip nat outside
+int g0/0/1.40
+ip nat inside
+int g0/0/1.50
+ip nat inside
+int g0/0/1.60
+ip nat inside
+
+
+
+************************************************************
+
+ISP
+
+
+int g0/0/0
+ip add 209.165.100.2 255.255.255.252
+no shut
+int g0/0/1
+ip add 209.165.101.2 255.255.255.252
+no shut
+int g0/1/0
+ip add 209.165.102.2 255.255.255.252
+no shut
+
+
+ip route 192.168.0.0 255.255.252.0 209.165.100.1  (allowing East to West)
+ip route 192.168.4.0 255.255.255.0 209.165.102.1  (allowing West to East)
+ip route 192.168.0.0 255.255.252.0 209.165.101.1 5 (allowing East to West2 adding admin distance 5)
+
+
+ip route 192.168.0.0 255.255.252.0 209.165.100.1  
+ip route 192.168.4.0 255.255.255.0 209.165.102.1  
+ip route 192.168.0.0 255.255.252.0 209.165.101.1 
+
+
+
+
+*******************IPsec command explaination****************
+crypto isakmp policy # (number could be 1-10000)
+encryption aes         (can be aes,des,3des)
+hash sha               (can be md5 or sha)
+authentication pre-share
+group 1                (DH group 1,2,5, or 14 not all routers have 14, 14 consider the strongest)
+crypto isakmp key [PASSWORD] address [address of the other end]
+crypto ipsec transform-set [TAGNAME] esp-aes esp-sha-hmac
+crypto map [NAMEofMAP] # ipsec-isakmp   (number can be 1-65535)
+set peer 209.165.102.1             (address of the other end again)
+set transform-set [NAME]           (use the name set on the above command)
+match address 101                  (match the ACL)
+access-list 101 permit ip 192.168.0.0 0.0.3.255 192.168.4.0 0.0.0.255  (create ACL)
+int g0/0/0
+crypto map [NAMEofMAP]  (use the one you create from above apply your map to the exit interface)
+
+
+
+
+
+
+
+
+
