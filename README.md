@@ -50,12 +50,25 @@ This is the detailed logical topology that includes all the IP addressing and VL
 
 <img src="https://i.imgur.com/9FReK4J.png" alt="Detail logical topology"/>
 <br />
-<br />
-Confirm your selection:  <br/>
+<h3>Protocol that is used:</h3>
+<ul>
+  <li>OSPFv2</li>
+  <li>DHCPv4, DHCPv6</li>
+  <li>LACP(Between S1&S3)</li>
+  <li>HSRP(Between West&West2 routers)</li>
+  <li>IPSEC over GRE tunnel</li>
+  <li>NTP</li>
+</ul>
+
+
+
+
+
+Domain controller  <br/>
 <img src="https://i.imgur.com/cdFHBiU.png" height="80%" width="80%" alt="Disk Sanitization Steps"/>
 <br />
 <br />
-Wait for process to complete (may take some time):  <br/>
+Linux web servers, DHCP failover  <br/>
 <img src="https://i.imgur.com/JL945Ga.png" height="80%" width="80%" alt="Disk Sanitization Steps"/>
 <br />
 <br />
