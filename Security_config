@@ -1,0 +1,307 @@
+Secuirty
+
+************************
+DHCP
+Router:
+Guest     (vlan 100) - exclude192.168.0.    1-10,128-254    (linux exclude 1-127, 252-254)
+Vancouver (vlan 10)  - exclude192.168.1.    1-10,128-254    (linux exclude 1-127, 252-254)
+Calgary   (vlan 20)  - exclude192.168.2.    1-10,128-254    (linux exclude 1-127, 252-254)
+AdminWest (vlan 30)  - exclude192.168.3.    1-10,128-254    (linux exclude 1-127, 252-254)
+
+
+
+
+*******************Basic securirty command****************
+enable secret C!sa2023
+Service password-encryption
+no ip domain-lookup
+ip domain-name ad.energy.connections
+username g3admin secret C!sa2023
+crypto key generate rsa 
+1024
+login block-for 600 attempts 5 within 120  (within 2 mins attempts 5,  block for 10 mins)
+security passwords min-length 8  (no on switch)
+banner motd # Authroized access only! #
+
+lin vty 0 15
+password C!sa2023
+transport input ssh
+login local
+access-class 10 in
+
+line con 0
+password C!sa2023
+login
+
+
+access-list 10 permit host 192.168.3.10
+
+
+no ip http server(all)
+
+******************* ACL *********************
+access-list 1 permit xxx.xxx.xxx.xxx(use it for line vty access, permit only admin)
+
+
+
+(On WEST g0/0/1.100 110 in)(guest can access internet, but not other network)
+access-list 110 deny ip 192.168.0.0 0.0.0.255 192.168.1.0 0.0.0.255
+access-list 110 deny ip 192.168.0.0 0.0.0.255 192.168.2.0 0.0.0.255
+access-list 110 deny ip 192.168.0.0 0.0.0.255 192.168.3.0 0.0.0.255
+access-list 110 deny ip 192.168.0.0 0.0.0.255 192.168.4.0 0.0.0.255
+access-list 110 permit ip any any
+int g0/0/1.100 access-list 110 in
+
+********************************************************
+S1
+
+
+spanning-tree portfast bpduguard default
+spanning-tree portfast bpdufilter default
+
+
+
+(all unused ports)(non-trunking ports)
+int range f0/1 ,f0/5-20 ,g0/2
+switchport mode access
+switchport access vlan 99
+shutdown
+spanning-tree portfast 
+switchport port-security
+switchport port-security maximum 2 
+switchport port-security violation shutdown
+switchport port-security mac-address sticky
+
+
+(everything)
+int range f0/1-24 ,g0/1-2
+switchport nonegotiate
+
+
+
+(on trunk)
+ip dhcp snooping 
+ip dhcp snooping vlan 10,20,30,69,100,150
+int ran f0/2 ,f0/21-24 ,g0/1
+ip dhcp snooping trust
+
+
+(on trunk)(but not g0/1, g0/1 needs to be snooping trust)
+ip arp inspection vlan 10,20,30,69,99,100,150
+ip arp inspection validate dst-mac src-mac ip
+int ran f0/2 ,f0/21-24
+ip arp inspection trust
+
+
+
+
+
+********************************************************
+S2
+
+
+spanning-tree portfast bpduguard default
+spanning-tree portfast bpdufilter default
+
+
+
+(all unused ports)(non-trunking ports)
+int range f0/4-10 ,f0/12-24 ,g0/1-2
+switchport mode access
+switchport access vlan 99
+shutdown
+spanning-tree portfast 
+switchport port-security
+switchport port-security maximum 2 
+switchport port-security violation shutdown
+switchport port-security mac-address sticky
+
+
+
+
+
+
+(everything)
+int range f0/1-24 ,g0/1-2
+switchport nonegotiate
+
+
+
+(on trunk)
+ip dhcp snooping 
+ip dhcp snooping vlan 10,20,30,69,100,150
+int ran f0/1-3
+ip dhcp snooping trust
+
+
+(on trunk)(but not g0/1, g0/1 needs to be snooping trust)
+*******************S2 doesnt have ip arp inspection
+ip arp inspection vlan 10,20,30,69,99,100,150
+ip arp inspection validate dst-mac src-mac ip
+int ran f0/1-3
+ip arp inspection trust
+********************************************************
+S3
+
+spanning-tree portfast bpduguard default
+spanning-tree portfast bpdufilter default
+
+
+
+(all unused ports)(non-trunking ports)
+int range f0/1-2 ,f0/4-20 ,g0/2
+switchport mode access
+switchport access vlan 99
+shutdown
+spanning-tree portfast 
+switchport port-security
+switchport port-security maximum 2 
+switchport port-security violation shutdown
+switchport port-security mac-address sticky
+
+
+(everything)
+int range f0/1-24 ,g0/1-2
+switchport nonegotiate
+
+
+
+(on trunk)
+ip dhcp snooping 
+ip dhcp snooping vlan 10,20,30,69,100,150
+int ran f0/3 ,f0/21-24 ,g0/1
+ip dhcp snooping trust
+
+
+(on trunk)(but not g0/1, g0/1 needs to be snooping trust)
+*******************S3 has issue when using this****************************************
+ip arp inspection vlan 10,20,30,69,99,100,150
+ip arp inspection validate dst-mac src-mac ip
+int ran f0/3 ,f0/21-24
+ip arp inspection trust
+
+********************************************************
+S4
+
+spanning-tree portfast bpduguard default
+spanning-tree portfast bpdufilter default
+
+
+
+(all unused ports)(non-trunking ports)
+int range f0/2-10, f0/12-24 ,g0/2
+switchport mode access
+switchport access vlan 99
+shutdown
+spanning-tree portfast 
+switchport port-security
+switchport port-security maximum 2 
+switchport port-security violation shutdown
+switchport port-security mac-address sticky
+
+
+(everything)
+int range f0/1-24 ,g0/1-2
+switchport nonegotiate
+
+
+
+(on trunk)
+ip dhcp snooping 
+ip dhcp snooping vlan 40,50,60,69
+int ran f0/1 ,g0/1
+ip dhcp snooping trust
+
+
+(on trunk)(but not g0/1, g0/1 needs to be snooping trust)
+******************has issue
+ip arp inspection vlan 40,50,60,69,99
+ip arp inspection validate dst-mac src-mac ip
+int ran f0/1 ,g0/1
+ip arp inspection trust
+
+
+********************************************************
+
+West & East
+ip dhcp relay information trust-all
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+********************************************************
+**********************MAC flooding**********************
+on switch, port security********************************
+
+show mac address-table (all MAC on different vlan)
+
+
+int f0/1
+switchport nonegotiate
+switchport port-security
+switchport port-security maximum 2 (maximum secure address)
+switchport port-security violation shutdown
+switchport port-security mac-address sticky
+switchport port-security mac-address aaaa:aaaa:aaaa (use it on the critical mission devices)
+
+
+
+**********************STP manipulation******************
+spanning-tree mode rapid-pvst
+********S2
+int f0/1
+spanning-tree guard root
+
+
+**********************ARP poisoning (DAI)**********************
+sh ip apr inspection vlan
+ip arp inspection limit (limit the number for arp)
+
+*******On the switches West & West2*******
+ip arp inspection vlan 10,20,30,69,100,150
+
+*******On the switches East*******
+ip arp inspection vlan 40,50,60,69
+
+
+
+**********************Vlan hopping**********************
+on the switch S2 S4***** changing the default native vlan
+
+(all ports) switchport nonegotiate
+(all unuser ports) to Vlan 99 and shutdown
+
+
+
+
+
+**********************DHCP starvation**********************
+********all switches***********
+ip dhcp snooping
+
+
+int f0/1
+ip dhcp snooping trust
+ip dhcp snooping vlan (no need because all cable are trunk)
+
+
+
+
+
+
+
