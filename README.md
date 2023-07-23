@@ -22,14 +22,15 @@ This project encompasses the design and implementation of a comprehensive networ
 <h2>Program walk-through:</h2>
 
 <p align="center">
-The picture show the simple topology of the network design, "West" will be the main site, supporting high availability and redundancy, contains Vancouver and Calgary<br/>
-East will be the other site that contains Montreal and Toronto <br/>
+The picture shows the simple topology of the network design, "West" will be the main site containing Vancouver and Calgary, 
+supporting high availability and redundancy. <br/>
+East will be the other site that has Montreal and Toronto <br/>
 
 <img src="https://i.imgur.com/UoGBPdl.png" alt="Frist topology"/>
 <br />
 <br />
-Select the disk:  <br/>
-<img src="https://i.imgur.com/tcTyMUE.png" height="80%" width="80%" alt="Disk Sanitization Steps"/>
+This picture shows more details about how each campus will look like<br/>
+<img src="https://i.imgur.com/gjMwo7q.png" alt="The full topology"/>
 <br />
 <br />
 Enter the number of passes: <br/>
