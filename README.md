@@ -22,8 +22,10 @@ This project encompasses the design and implementation of a comprehensive networ
 <h2>Program walk-through:</h2>
 
 <p align="center">
-Launch the utility: <br/>
-<img src="https://i.imgur.com/llAUlDD.png" height="80%" width="80%" alt="Disk Sanitization Steps"/>
+The picture show the simple topology of the network design, "West" will be the main site, supporting high availability and redundancy, contains Vancouver and Calgary<br/>
+East will be the other site that contains Montreal and Toronto <br/>
+
+<img src="https://i.imgur.com/UoGBPdl.png" alt="Frist topology"/>
 <br />
 <br />
 Select the disk:  <br/>
