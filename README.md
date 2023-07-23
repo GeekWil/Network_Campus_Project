@@ -22,19 +22,33 @@ This project encompasses the design and implementation of a comprehensive networ
 <h2>Program walk-through:</h2>
 
 <p align="center">
-The picture shows the simple topology of the network design, "West" will be the main site containing Vancouver and Calgary, 
-supporting high availability and redundancy. <br/>
-East will be the other site that has Montreal and Toronto <br/>
+The picture shows the simple topology of the network design, "West" will be the main site containing Vancouver and Calgary, <br/> 
+supporting high availability and redundancy. East will be the other site that has Montreal and Toronto <br/>
 
 <img src="https://i.imgur.com/UoGBPdl.png" alt="Frist topology"/>
+<br />
+<br />
+<br />
 <br />
 <br />
 This picture shows more details about how each campus will look like<br/>
 <img src="https://i.imgur.com/gjMwo7q.png" alt="The full topology"/>
 <br />
 <br />
-Enter the number of passes: <br/>
-<img src="https://i.imgur.com/nCIbXbg.png" height="80%" width="80%" alt="Disk Sanitization Steps"/>
+<br />
+<br />
+<br />
+This is the detailed logical topology that includes all the IP addressing and VLAN <br/>
+<ul>
+  <li>Vancouver: Vlan 10 - 192.168.1.0/24</li>
+  <li>Calgary:   Vlan 20 - 192.168.2.0/24</li>
+  <li>IT (West): Vlan 30 - 192.168.3.0/24</li>
+  <li>Montreal:  Vlan 40 - 192.168.4.0/25</li>
+  <li>Toronto:   Vlan 50 - 192.168.4.128/26</li>
+  <li>IT (East): Vlan 60 - 192.168.4.192/28</li>
+</ul>
+
+<img src="https://i.imgur.com/9FReK4J.png" alt="Detail logical topology"/>
 <br />
 <br />
 Confirm your selection:  <br/>
