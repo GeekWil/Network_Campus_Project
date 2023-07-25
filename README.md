@@ -22,23 +22,26 @@ This project encompasses the design and implementation of a comprehensive networ
 <h2>Program walk-through:</h2>
 
 <p align="center">
-The picture shows the simple topology of the network design, "West" will be the main site containing Vancouver and Calgary, <br/> 
-supporting high availability and redundancy. East will be the other site that has Montreal and Toronto <br/>
-
+<br />
+<b>The picture shows the simple topology of the network design, "West" will be the main site containing Vancouver and Calgary, <br/> 
+supporting high availability and redundancy. East will be the other site that has Montreal and Toronto</b> <br/>
+<br />
+  
 <img src="https://i.imgur.com/UoGBPdl.png" alt="Frist topology"/>
 <br />
 <br />
 <br />
 <br />
 <br />
-This picture shows more details about how each campus will look like<br/>
+<b>This picture shows more details about how each campus will look like</b><br/>
 <img src="https://i.imgur.com/gjMwo7q.png" alt="The full topology"/>
 <br />
 <br />
 <br />
 <br />
 <br />
-This is the detailed logical topology that includes all the IP addressing and VLAN <br/>
+<b>This is the detailed logical topology that includes all the IP addressing and VLAN </b><br/>
+<br />
 <ul>
   <li>Vancouver: Vlan 10 - 192.168.1.0/24</li>
   <li>Calgary:   Vlan 20 - 192.168.2.0/24</li>
@@ -60,18 +63,33 @@ This is the detailed logical topology that includes all the IP addressing and VL
   <li>NTP</li>
 </ul>
 
+<br />
+<br />
+<br />
+<br />
 
 
 
+<b>Domain controller<b/> <br/>
+<br />
+<img src="https://i.imgur.com/jAOR9br.png" alt="Domain controller"/>
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<b>Linux web servers, DHCP failover</b><br/>
+<br />
+<img src="https://i.imgur.com/cEV4RiM.png" alt="Linux servers"/>
+<br />
+Linux will act as a DHCP server if the router failed<br />
+<br />
+<br />
+<br />
+<br />
 
-Domain controller  <br/>
-<img src="https://i.imgur.com/cdFHBiU.png" height="80%" width="80%" alt="Disk Sanitization Steps"/>
-<br />
-<br />
-Linux web servers, DHCP failover  <br/>
-<img src="https://i.imgur.com/JL945Ga.png" height="80%" width="80%" alt="Disk Sanitization Steps"/>
-<br />
-<br />
+<!--
 Sanitization complete:  <br/>
 <img src="https://i.imgur.com/K71yaM2.png" height="80%" width="80%" alt="Disk Sanitization Steps"/>
 <br />
@@ -79,6 +97,7 @@ Sanitization complete:  <br/>
 Observe the wiped disk:  <br/>
 <img src="https://i.imgur.com/AeZkvFQ.png" height="80%" width="80%" alt="Disk Sanitization Steps"/>
 </p>
+-->
 
 <!--
  ```diff
