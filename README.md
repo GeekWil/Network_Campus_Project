@@ -66,9 +66,15 @@ supporting high availability and redundancy. East will be the other site that ha
 <br />
 <br />
 <br />
+
+
+
+<h3>Simulate on Packet tracer<h3>
+<img src="https://i.imgur.com/fMDg6fK.png" alt="packet tracer"/>
 <br />
-
-
+<br />
+<br />
+<br />
 
 <b>Domain controller<b/> <br/>
 <br />
