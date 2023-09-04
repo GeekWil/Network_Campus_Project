@@ -1,5 +1,5 @@
 <h1>Network Design</h1>
-
+ 
 <h2>Description</h2>
 "ECI Business" is an emerging small company with a workforce of 80 employees spread across four office buildings. The company's primary site is situated in Vancouver, with additional offices located in Calgary, Montreal, and Toronto, spanning across Canada.
 
